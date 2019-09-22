@@ -43,6 +43,71 @@
 
 #include "mcc_generated_files/mcc.h"
 
+uint8_t matrics_buf[54];
+uint8_t matrics_subbuf[54];
+
+void DisplayBuf(){
+    L_SRCLR_SetLow();
+    H_SRCLR_SetLow();
+    L_SRCLR_SetHigh();
+    H_SRCLR_SetHigh();
+    
+    L_SER_SetHigh();
+    L_SRCLK_SetHigh();
+    L_RCLK_SetHigh();
+    L_SER_SetLow();
+    L_SRCLK_SetLow();
+    L_RCLK_SetLow();
+    
+    uint8_t i,k;
+    uint8_t b1,b2,b3;
+    
+    for(i=0;i<54;i+=3){
+        b1=matrics_buf[i];
+        b2=matrics_buf[i+1];
+        b3=matrics_buf[i+2];
+        
+        for(k=0;k<8;k++){
+            H_SER_LAT = (b1&0x01)?1:0;
+            b1>>=1;
+            NOP();
+            H_SRCLK_SetHigh();
+            H_SRCLK_SetLow();
+        }
+        for(k=0;k<4;k++){
+            H_SER_LAT = (b2&0x01)?1:0;
+            b2>>=1;
+            NOP();
+            H_SRCLK_SetHigh();
+            H_SRCLK_SetLow();
+        }
+        H_RCLK_SetHigh();
+        H_RCLK_SetLow();
+        
+        for(k=0;k<4;k++){
+            H_SER_LAT = (b2&0x01)?1:0;
+            b2>>=1;
+            NOP();
+            H_SRCLK_SetHigh();
+            H_SRCLK_SetLow();
+        }
+        for(k=0;k<8;k++){
+            H_SER_LAT = (b3&0x01)?1:0;
+            b3>>=1;
+            NOP();
+            H_SRCLK_SetHigh();
+            H_SRCLK_SetLow();
+        }
+        H_RCLK_SetHigh();
+        H_RCLK_SetLow();
+        
+        L_SRCLK_SetHigh();
+        L_RCLK_SetHigh();
+        L_SRCLK_SetLow();
+        L_RCLK_SetLow();
+    }
+}
+
 /*
                          Main application
  */
@@ -61,13 +126,89 @@ void main(void)
     //INTERRUPT_PeripheralInterruptEnable();
 
     // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
+    INTERRUPT_GlobalInterruptDisable();
 
     // Disable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptDisable();
+    INTERRUPT_PeripheralInterruptDisable();
+    for(uint8_t i=0;i<54;i++){
+        matrics_buf[i]=0;
+    }
+    
+    for(uint8_t i=0;i<54;i++){
+        matrics_buf[i]=0x01;
+    }
+    
+    L_SRCLK_SetLow();
+    H_SRCLK_SetLow();
+    L_RCLK_SetLow();
+    H_RCLK_SetLow();
+    L_SER_SetLow();
+    H_SER_SetLow();
+    L_SRCLR_SetHigh();
+    H_SRCLR_SetHigh();
+    L_SRCLR_SetLow();
+    H_SRCLR_SetLow();
+    L_SRCLR_SetHigh();
+    H_SRCLR_SetHigh();
 
+    uint16_t cnt=0;
+    
     while (1)
     {
+        /*
+        DisplayBuf();
+        
+        if(cnt++==0xff){
+            cnt=0;
+            for(uint8_t i=0;i<54;i++){
+                matrics_buf[i]<<=1;
+                if(matrics_buf[i]==0)
+                    matrics_buf[i]=0x01;
+            }
+        }
+        */
+        L_SRCLR_SetLow();
+        H_SRCLR_SetLow();
+        L_SRCLR_SetHigh();
+        H_SRCLR_SetHigh();
+        
+        H_SRCLK_SetLow();
+        H_SER_SetHigh();
+        H_SRCLK_SetHigh();
+        H_SER_SetLow();
+        H_SRCLK_SetLow();
+        
+        for(uint8_t k=0;k<12;k++){
+            H_RCLK_SetHigh();
+            H_SRCLK_SetHigh();
+            H_RCLK_SetLow();
+            H_SRCLK_SetLow();
+            
+            L_SER_SetHigh();
+            L_SRCLK_SetHigh();
+            L_SER_SetLow();
+            L_SRCLK_SetLow();
+            for(uint8_t i=0;i<36;i++){
+                L_RCLK_SetHigh();
+                L_SRCLK_SetHigh();
+                L_RCLK_SetLow();
+                L_SRCLK_SetLow();
+            }
+        }
+        
+        L_SRCLR_SetLow();
+        H_SRCLR_SetLow();
+        L_SRCLR_SetHigh();
+        H_SRCLR_SetHigh();
+        H_RCLK_SetHigh();
+        L_RCLK_SetHigh();
+        H_RCLK_SetLow();
+        L_RCLK_SetLow();
+        
+        //for(uint16_t m=0;m<0xa00;m++){
+        //    NOP();
+        //}
+        
         // Add your application code
     }
 }
