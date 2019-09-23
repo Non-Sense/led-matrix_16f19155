@@ -145,6 +145,26 @@
 #define L_SER_SetAnalogMode()      do { ANSELAbits.ANSA3 = 1; } while(0)
 #define L_SER_SetDigitalMode()     do { ANSELAbits.ANSA3 = 0; } while(0)
 
+// get/set L_OE aliases
+#define L_OE_TRIS                 TRISAbits.TRISA4
+#define L_OE_LAT                  LATAbits.LATA4
+#define L_OE_PORT                 PORTAbits.RA4
+#define L_OE_WPU                  WPUAbits.WPUA4
+#define L_OE_OD                   ODCONAbits.ODCA4
+#define L_OE_ANS                  ANSELAbits.ANSA4
+#define L_OE_SetHigh()            do { LATAbits.LATA4 = 1; } while(0)
+#define L_OE_SetLow()             do { LATAbits.LATA4 = 0; } while(0)
+#define L_OE_Toggle()             do { LATAbits.LATA4 = ~LATAbits.LATA4; } while(0)
+#define L_OE_GetValue()           PORTAbits.RA4
+#define L_OE_SetDigitalInput()    do { TRISAbits.TRISA4 = 1; } while(0)
+#define L_OE_SetDigitalOutput()   do { TRISAbits.TRISA4 = 0; } while(0)
+#define L_OE_SetPullup()          do { WPUAbits.WPUA4 = 1; } while(0)
+#define L_OE_ResetPullup()        do { WPUAbits.WPUA4 = 0; } while(0)
+#define L_OE_SetPushPull()        do { ODCONAbits.ODCA4 = 0; } while(0)
+#define L_OE_SetOpenDrain()       do { ODCONAbits.ODCA4 = 1; } while(0)
+#define L_OE_SetAnalogMode()      do { ANSELAbits.ANSA4 = 1; } while(0)
+#define L_OE_SetDigitalMode()     do { ANSELAbits.ANSA4 = 0; } while(0)
+
 // get/set H_SRCLR aliases
 #define H_SRCLR_TRIS                 TRISAbits.TRISA6
 #define H_SRCLR_LAT                  LATAbits.LATA6
