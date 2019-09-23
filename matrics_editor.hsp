@@ -1,0 +1,136 @@
+#define Xnum 36
+#define Ynum 12
+
+#define Size 15
+#define Ofset (Size+3)
+#define OfsetX 40
+#define OfsetY 40
+
+screen 0,800,500
+
+dim buf,54
+
+pos 400,350
+msg=""
+mesbox msg,300,100,0
+msgid=stat
+
+pos 400,451
+button gosub "セーブ",*save
+pos 470,451
+button gosub "ロード",*load
+
+pos 40,350
+button gosub "全塗り",*fill
+button gosub "全消し",*clr
+gosub *update
+*main
+
+	redraw 0
+	color 255,255,255
+	boxf
+
+	color 200,200,200
+	for x,0,Xnum
+		for y,0,Ynum
+			circle OfsetX+Ofset*x,OfsetY+Ofset*y,OfsetX+Ofset*x+Size,OfsetY+Ofset*y+Size
+		next
+	next
+	
+	rx=mousex-OfsetX
+	ry=mousey-OfsetY
+	if rx<0 : rx=-100
+	if ry<0 : ry=-100
+	ix=rx/(Ofset)
+	iy=ry/(Ofset)
+	pos 0,0
+	color 
+	mes "x: "+ix+"\ty: "+iy
+	color 100,240,240
+	if ix>=0 && ix<Xnum && iy>=0 && iy<Ynum {
+		circle OfsetX+Ofset*ix,OfsetY+Ofset*iy,OfsetX+Ofset*ix+Size,OfsetY+Ofset*iy+Size
+	}
+
+	color 240,140,80
+	for x,0,Xnum
+		for y,0,Ynum
+			bbi=x*Ynum+y
+			bbbbi=bbi/8
+			if (buf(bbi/8)&(1<<(bbi\8))) {
+				circle OfsetX+Ofset*x,OfsetY+Ofset*y,OfsetX+Ofset*x+Size,OfsetY+Ofset*y+Size
+			}
+		next
+	next
+	
+	color 100,100,100
+	line OfsetX+Ofset*0-2,OfsetY-2,OfsetX+Ofset*0-2,OfsetY+Ofset*Ynum-1
+	line OfsetX+Ofset*7-2,OfsetY-2,OfsetX+Ofset*7-2,OfsetY+Ofset*Ynum-1
+	line OfsetX+Ofset*14-2,OfsetY-2,OfsetX+Ofset*14-2,OfsetY+Ofset*Ynum-1
+	line OfsetX+Ofset*22-2,OfsetY-2,OfsetX+Ofset*22-2,OfsetY+Ofset*Ynum-1
+	line OfsetX+Ofset*29-2,OfsetY-2,OfsetX+Ofset*29-2,OfsetY+Ofset*Ynum-1
+	line OfsetX+Ofset*36-2,OfsetY-2,OfsetX+Ofset*36-2,OfsetY+Ofset*Ynum-1
+	line OfsetX+Ofset*0-3,OfsetY-2,OfsetX+Ofset*36-2,OfsetY-2
+	line OfsetX+Ofset*0-2,OfsetY+Ofset*Ynum-1,OfsetX+Ofset*36-2,OfsetY+Ofset*Ynum-1
+
+	
+	stick key,256+512
+	bi=ix*Ynum+iy
+	flag=0
+	if bi < 0 || bi > Xnum*Ynum ||ix<0||iy<0||ix>=Xnum||iy>=Ynum: key=0
+	if key&256 {
+		buf(bi/8)|=(1<<(bi\8))
+		flag=1
+	}
+	if key&512 {
+		buf(bi/8)&=(0xFF^(1<<(bi\8)))
+		flag=1
+	}
+
+	if flag {
+		gosub *update
+	}
+	
+	
+	redraw 1
+	await 1
+goto *main
+
+*update
+	msg=""
+	for i,0,54
+		msg=msg+strf("0x%02x, ",buf(i))
+	next
+	msg=strtrim(msg,2,' ')
+	msg=strtrim(msg,2,',')
+	objprm msgid,msg
+
+	return
+
+*fill
+	for i,0,54
+		buf(i)=0xff
+	next
+	gosub *update
+	return
+*clr
+	for i,0,54
+		buf(i)=0x00
+	next
+	gosub *update
+	return
+
+*save
+	dialog "cbin",17
+	if stat!=1 : return
+	dir=refstr
+	bsave dir,buf
+	return
+
+*load
+	dialog "cbin",16
+	if stat!=1 : return
+	dir=refstr
+	bload dir,buf
+	gosub *update
+	return
+	

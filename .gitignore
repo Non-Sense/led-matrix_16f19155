@@ -8,3 +8,11 @@ LED_Matrics.X/build/default/production/
 LED_Matrics.X/build/default/debug/
 
 LED_Matrics.X/dist/default/debug/
+
+obj
+
+hsptmp
+
+packfile
+
+start.ax
