@@ -24,33 +24,41 @@ pos 40,350
 button gosub "全塗り",*fill
 button gosub "全消し",*clr
 gosub *update
+
 *main
 
 	redraw 0
 	color 255,255,255
 	boxf
 
+	// 背景ドット描画
 	color 200,200,200
 	for x,0,Xnum
 		for y,0,Ynum
 			circle OfsetX+Ofset*x,OfsetY+Ofset*y,OfsetX+Ofset*x+Size,OfsetY+Ofset*y+Size
 		next
 	next
-	
+
+
+	// ix, iy : ドット的な位置
 	rx=mousex-OfsetX
 	ry=mousey-OfsetY
 	if rx<0 : rx=-100
 	if ry<0 : ry=-100
 	ix=rx/(Ofset)
 	iy=ry/(Ofset)
-	pos 0,0
-	color 
-	mes "x: "+ix+"\ty: "+iy
-	color 100,240,240
+
+	// カーソルが範囲内の時の描画
+	// 青のハイライトと座標
 	if ix>=0 && ix<Xnum && iy>=0 && iy<Ynum {
+		pos 0,0
+		color 
+		mes "x: "+ix+"\ty: "+iy
+		color 100,240,240
 		circle OfsetX+Ofset*ix,OfsetY+Ofset*iy,OfsetX+Ofset*ix+Size,OfsetY+Ofset*iy+Size
 	}
 
+	// 点灯ドット描画
 	color 240,140,80
 	for x,0,Xnum
 		for y,0,Ynum
@@ -61,7 +69,8 @@ gosub *update
 			}
 		next
 	next
-	
+
+	// 外枠線描画
 	color 100,100,100
 	line OfsetX+Ofset*0-2,OfsetY-2,OfsetX+Ofset*0-2,OfsetY+Ofset*Ynum-1
 	line OfsetX+Ofset*7-2,OfsetY-2,OfsetX+Ofset*7-2,OfsetY+Ofset*Ynum-1
@@ -72,7 +81,8 @@ gosub *update
 	line OfsetX+Ofset*0-3,OfsetY-2,OfsetX+Ofset*36-2,OfsetY-2
 	line OfsetX+Ofset*0-2,OfsetY+Ofset*Ynum-1,OfsetX+Ofset*36-2,OfsetY+Ofset*Ynum-1
 
-	
+
+	// マウス入力でドット状態変更
 	stick key,256+512
 	bi=ix*Ynum+iy
 	flag=0
@@ -85,7 +95,6 @@ gosub *update
 		buf(bi/8)&=(0xFF^(1<<(bi\8)))
 		flag=1
 	}
-
 	if flag {
 		gosub *update
 	}
@@ -95,6 +104,7 @@ gosub *update
 	await 1
 goto *main
 
+// ソース用文字列更新　(右下のやつ)
 *update
 	msg=""
 	for i,0,54
@@ -106,12 +116,15 @@ goto *main
 
 	return
 
+// 全埋め
 *fill
 	for i,0,54
 		buf(i)=0xff
 	next
 	gosub *update
 	return
+
+// 全消し
 *clr
 	for i,0,54
 		buf(i)=0x00
@@ -119,6 +132,7 @@ goto *main
 	gosub *update
 	return
 
+// このソフト用のバッファ保存
 *save
 	dialog "cbin",17
 	if stat!=1 : return
@@ -126,6 +140,7 @@ goto *main
 	bsave dir,buf
 	return
 
+// 保存ファイル読み込み
 *load
 	dialog "cbin",16
 	if stat!=1 : return
