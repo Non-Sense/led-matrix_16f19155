@@ -305,19 +305,6 @@ void DisplayBuf(){
 }
 
 uint8_t rcnt=RAND_RST;
-/* 
- *   K  K   U   U    SSS   OOO
- *   K K    U   U   S     O   O
- *   KK     U   U    SS   O   O
- *   K K    U   U      S  O   O
- *   K  K    UUU    SSS    OOO
- * 
- *    CCC    OOO    DDD   EEEE
- *   C      O   O   D  D  E
- *   C      O   O   D  D  EEE
- *   C      O   O   D  D  E
- *    CCC    OOO    DDD   EEEE
- */
 inline 
 uint8_t LoadData(uint8_t mode, uint8_t *frame){
     if(sq_list[mode][1]<=*frame){
