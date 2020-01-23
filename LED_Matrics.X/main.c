@@ -127,7 +127,7 @@ static const uint8_t sq[][2]={
  *   2      wink
  */
 
-#define mode_max_idx 6
+#define mode_max_idx 8
 // index, length, repeat num
 static const uint8_t sq_list[][3]={
     {0,  8,  1},
@@ -136,12 +136,17 @@ static const uint8_t sq_list[][3]={
     {10, 4,  1},
     {10, 4,  1},
     {14, 4,  1},
+    {14, 4,  1},
+    {14, 4,  1},
     {14, 4,  1}
 };
 
 
-uint8_t xrnd(){
-    static uint8_t x=rand();
+uint8_t xrnd(uint8_t seed){
+    static uint8_t x=0;
+    if(seed!=0){
+        x=ADCC_GetSingleConversion(0x12)&0xFF;
+    }
     x^= x>>1;
     x^= x<<1;
     x^= x>>7;
@@ -353,7 +358,7 @@ void main(void)
     for(uint8_t i=0;i<54;i++){
         //matrics_buf[i]=0xff;
     }
-    
+    xrnd(1);
     SerSetLow();
     SerReset();
     SerRatch();
@@ -382,7 +387,7 @@ void main(void)
                 if(mode==1){
                     mode=0;
                 }
-                if(xrnd()%3==0){
+                if(xrnd(0)%3==0){
                     mode=1;
                 }
             }
@@ -391,7 +396,7 @@ void main(void)
                 wait_time=0x120;
             }
             if(wait_time==0xfe){
-                wait_time=0x100+(xrnd());
+                wait_time=0x100+(xrnd(0));
             }
             
             
@@ -401,10 +406,10 @@ void main(void)
                     mode=0;
                     //rcnt=20;
                     rcnt=RAND_RST;
-                    rcnt+=xrnd()%RAND_DIV;
+                    rcnt+=xrnd(0)%RAND_DIV;
                     pec_flag=0;
                 } else {
-                    mode = (xrnd()%(mode_max_idx-1));
+                    mode = (xrnd(0)%(mode_max_idx-1));
                     mode+=2;
                     rcnt=sq_list[mode][2];
                     pec_flag=1;
